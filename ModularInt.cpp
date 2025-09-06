@@ -16,23 +16,19 @@
 
 
 
-int ModInt::gCF(int m, int n)
-{
-    if (m == 0)
-    {
+int ModInt::gCF(int m, int n) {
+    if (m == 0) {
         if (n == 0)
             throw invalid_argument("gcf(0,0) = nan");
         return abs(n);
     }
     else if (n == 0)
         return abs(m);
-    else
-    {
+    else {
         m = abs(m);
         n = abs(n);
         int rem = m % n;
-        while (rem != 0)
-        {
+        while (rem != 0) {
             m = n;
             n = rem;
             rem = m % n;
@@ -43,36 +39,31 @@ int ModInt::gCF(int m, int n)
 
 
 
-ModInt::ModInt()
-{
+ModInt::ModInt() {
     number = 0;
     base = 1;
 }
 
 
 
-ModInt::ModInt(int n, int b)
-{
+ModInt::ModInt(int n, int b) {
     number = n;
     base = b;
 
-    if (b <= 0)
-    {
+    if (b <= 0) {
         throw invalid_argument("The modulus of an integer must be a positive integer");
     }
 }
 
 
 
-int ModInt::getNumber() const
-{
+int ModInt::getNumber() const {
     return number;
 }
 
 
 
-int ModInt::getBase() const
-{
+int ModInt::getBase() const {
     return base;
 }
 
@@ -83,44 +74,37 @@ bool ModInt::congruent(const ModInt& m)
     int mod1 = number % base;
     int mod2 = m.number % m.base;
 
-    if (mod1 == mod2)
-    {
+    if (mod1 == mod2) {
         return true;
     }
-    else
-    {
+    else {
         return false;
     }
 }
 
 
 
-bool ModInt::invertible() const
-{
+bool ModInt::invertible() const {
     int n = number; 
     int m = base;    
 
-    if (n == 0)
-    {
+    if (n == 0) {
         return false;
     }
 
     n = abs(n);      
     int remainder = m % n;
     
-    while (remainder != 0)
-    {
+    while (remainder != 0) {
         m = n;
         n = remainder;
         remainder = m % n;
     }
 
-    if (n == 1)
-    {
+    if (n == 1) {
         return true;
     }
-    else
-    {
+    else {
         return false;
     }
     
@@ -128,19 +112,15 @@ bool ModInt::invertible() const
 
 
 
-ModInt ModInt::inverse() const
-{
+ModInt ModInt::inverse() const {
     int k = 0;
     int test_mod;
 
-    if (invertible() == false)
-    {
+    if (invertible() == false) {
         throw invalid_argument("This modular number is not invertible");
     }
-    else
-    {
-        do
-        {
+    else {
+        do {
             k++;
             test_mod = (k * number) % base;
         } while (test_mod != 1);
@@ -148,8 +128,7 @@ ModInt ModInt::inverse() const
 
     ModInt result(k, base);
 
-    if(result.number < 0)
-    {
+    if(result.number < 0) {
        result.number += result.base;
     }
     return result;
@@ -157,40 +136,33 @@ ModInt ModInt::inverse() const
 
 
 
-ostream& operator<<(ostream& out, const ModInt& m)
-{
+ostream& operator<<(ostream& out, const ModInt& m) {
     out << m.number << "[" << m.base << "]";
     return out;
 }
 
 
 
-bool operator==(ModInt& m, ModInt& n)                              
-{
+bool operator==(ModInt& m, ModInt& n) {
     bool result;
-    if (m.base != n.base)
-    {
+    if (m.base != n.base) {
         result = false;
     }
 
     int mod1 = m.number % m.base;
     int mod2 = n.number % n.base;
-    if (mod1 = mod2)
-    {
+    if (mod1 = mod2) {
         result = true;
     }
-    else
-    {
+    else {
         result = false;
     }
-    
     return result;
 }
 
 
 
-ModInt operator+(const ModInt& m, const ModInt& n)
-{
+ModInt operator+(const ModInt& m, const ModInt& n) {
     if (m.base != n.base)
         throw invalid_argument("Only modular numbers of the same base can be added.");
     ModInt result((m.number % m.base + n.number % m.base) % m.base, m.base);
@@ -201,15 +173,12 @@ ModInt operator+(const ModInt& m, const ModInt& n)
 
 
 
-ModInt operator-(const ModInt& m, const ModInt& n)
-{
-    if (m.base != n.base)
-    {
+ModInt operator-(const ModInt& m, const ModInt& n) {
+    if (m.base != n.base) {
         throw invalid_argument("To compute the difference of a modular number, they must have the same base");
     }
     ModInt result((m.number % m.base - n.number % m.base) % m.base, m.base);
-    if (result.number < 0)
-    {
+    if (result.number < 0) {
         result.number += m.base;
     }
     return result;
@@ -219,19 +188,16 @@ ModInt operator-(const ModInt& m, const ModInt& n)
 
 ModInt operator/(const ModInt& m, const ModInt& n)
 {
-    if (m.base != n.base)
-    {
+    if (m.base != n.base) {
         throw invalid_argument("To perform division on modular numbers, the numerator and denominator must have the same modular base");
     }
-    if (n.invertible() != true)
-    {
+    if (n.invertible() != true) {
         throw invalid_argument("To perform division on modular numbers, the numberator must be invertible.");
     }
 
     ModInt inverted_n = n.inverse();
     ModInt result(((m.number % m.base) * (inverted_n.number % n.base)) % n.base, n.base);
-    if (result.number < 0)
-    {
+    if (result.number < 0) {
         result.number += m.base;
     }
     return result;
@@ -239,15 +205,12 @@ ModInt operator/(const ModInt& m, const ModInt& n)
 
 
 
-ModInt operator*(const ModInt& m, const ModInt& n)
-{
-    if (m.base != n.base)
-    {
+ModInt operator*(const ModInt& m, const ModInt& n) {
+    if (m.base != n.base) {
         throw invalid_argument("To multiply two modular numbers, they must have the same base.");
     }
     ModInt result(((m.number % m.base) * (n.number % n.base)) % n.base, n.base);
-    if (result.number < 0)
-    {
+    if (result.number < 0) {
         result.number += m.base;
     }
     return result;
@@ -255,29 +218,23 @@ ModInt operator*(const ModInt& m, const ModInt& n)
 
 
 
-ModInt pow(const ModInt& m, int n)
-{
+ModInt pow(const ModInt& m, int n) {
     int i = 1;
     ModInt product;
     ModInt result;
     ModInt zeroth(1,m.base);
     
-    if (n < 0)
-    {
-        if (m.invertible() == false)
-        {
+    if (n < 0) {
+        if (m.invertible() == false) {
             throw invalid_argument("To perform exponentiation on a modular number, the modular number must be invertible.");
         }
-        else
-        {
+        else {
             result = m.inverse();
-            for (i; i < abs(n); i++)
-            {
+            for (i; i < abs(n); i++) {
                 product = result * m.inverse();
                 result = product;
             }
-            if (result.number < 0)
-            {
+            if (result.number < 0) {
                 result.number += result.base;
             }
         }
@@ -288,16 +245,13 @@ ModInt pow(const ModInt& m, int n)
         return zeroth;
     }
 
-    if(n > 0)
-    {
+    if(n > 0) {
         result = m;
-        for (i; i < n; i++)
-        {
+        for (i; i < n; i++) {
             product = result * m;
             result = product;
         }
-        if (result.number < 0)
-        {
+        if (result.number < 0) {
             result.number += result.base;
         }
     }
